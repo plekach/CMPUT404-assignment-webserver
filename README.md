@@ -24,3 +24,22 @@ examples thus some of the code is Copyright © 2001-2013 Python
 Software Foundation; All Rights Reserved under the PSF license (GPL
 compatible) http://docs.python.org/2/library/socketserver.html
 
+
+Resources
+========================
+
+
+URL: https://stackoverflow.com/questions/39090366/how-to-parse-raw-http-request-in-python-3
+* Author: Demian Brecht
+* Usage: Used to handle spliting request headers into a seperated key: value dict
+
+
+URL: https://stackoverflow.com/questions/21397565/mixing-mime-types-with-httpserver-in-python
+* Author: vikki
+* Usage: Used and adapted to handle path not found errors to return 404 codes (try/catch in python and error handling in python)
+
+
+URL: https://www.apache.org/licenses/LICENSE-2.0
+* Author: The Apache Software Foundation
+* Usage: Used to derive licensing for server.py webserver implementation
+

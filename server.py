@@ -113,6 +113,10 @@ class MyWebServer(socketserver.BaseRequestHandler):
             elif 'html' in fileType and '.html' not in basePath:
                 fileName = 'index.html'
             
+            # adding safety fo users can't exit www
+            if '../' in basePath:
+                basePath = basePath.replace('../', '')
+
             # parsing file and saving file content
             content = self.getFileContent(basePath + fileName)
 

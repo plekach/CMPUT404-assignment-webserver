@@ -98,47 +98,41 @@ class MyWebServer(socketserver.BaseRequestHandler):
             fileType = self.determineFile(basePath)
             # potential file content
             content = ''
-            # potential file name for path
-            fileName = ''
 
-            # if handling a css request type
-            if 'css' in fileType and '.css' not in basePath:
-                # if in a deeper folder
-                if '/deep/' in basePath:
-                    fileName = 'deep.css'
-                else:
-                    # in root directery css
-                    fileName = 'base.css'
-            # elif handling an html request type
-            elif 'html' in fileType and '.html' not in basePath:
-                fileName = 'index.html'
-            
             # adding safety fo users can't exit www
             if '../' in basePath:
                 basePath = basePath.replace('../', '')
+            
+            # determining if directory or not
+            if basePath.endswith('/'):
+                content = self.getFileContent(basePath + 'index.html')
+            else:
+                content = self.getFileContent(basePath)
 
-            # parsing file and saving file content
-            content = self.getFileContent(basePath + fileName)
+            if '404 Not FOUND!' in content:
+                # checking if path is to directory
+                missingSlash = self.getFileContent(basePath + '/index.html')
 
-            # if the path did not exist
-            if '404' in content:
-                # check if just missing a / in path
-                missingSlash = self.getFileContent(basePath + '/' + fileName)
-
-                # if / fixes path then send a 301 response and re-route to the appropriate url
-                if '404' not in missingSlash:
+                if '404 Not FOUND!' not in missingSlash:
+                    # request for directory
                     # no need for www in the location url
                     basePath = basePath.replace("www/", "")
                     response = 'HTTP/1.1 301 Moved Permanently\r\nContent-Type: ' + fileType + 'Location: http://' + host + '/' + basePath + '/' + '\r\n\r\n'
 
                 else:
-                    # else just send the 404 response since path DNE
-                    response = content
-            else:
-                # else send 200 OK response
-                response = response + fileType + '\r\n\r\n' + content + '\r\n\r\n'
+                    # checking if path is to file without extension
+                    missingHTMLExtension = self.getFileContent(basePath + '.html')
 
-            # sending response
+                    if '404 Not FOUND!' not in missingHTMLExtension:
+                        fileType = self.determineFile(basePath + '.html')
+                        response = response + fileType + '\r\n\r\n' + missingHTMLExtension + '\r\n\r\n'
+                    else:
+                        # path DNE
+                        response = content
+                
+            else:
+                response = response + fileType + '\r\n\r\n' + content + '\r\n\r\n'
+            
             self.request.sendall(bytearray(response, 'utf-8'))
 
 if __name__ == "__main__":
